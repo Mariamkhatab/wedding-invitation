@@ -464,7 +464,6 @@
     flex-wrap:wrap;
   }
   .btn{
-    position:relative;
     padding: 14px 30px;
     border-radius: 30px;
     border: none;
@@ -472,29 +471,10 @@
     font-size: 15px;
     font-weight:700;
     cursor:pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
   .btn:focus-visible{ outline: 2px solid var(--gold); outline-offset:3px; }
   .btn:active{ transform: scale(0.97); }
-  .btn:disabled{ cursor: default; }
-  .btn:disabled:not(.loading){ opacity: 0.5; }
-  .btn.loading{ color: transparent; }
-  .btn.loading::after{
-    content:'';
-    position:absolute;
-    left:50%; top:50%;
-    width:18px; height:18px;
-    margin:-9px 0 0 -9px;
-    border-radius:50%;
-    border:2px solid rgba(255,255,255,0.4);
-    border-top-color:#fff;
-    animation: btnSpin 0.7s linear infinite;
-  }
-  .btn-no.loading::after{
-    border-color: var(--lavender-soft);
-    border-top-color: var(--lavender-deep);
-  }
-  @keyframes btnSpin{ to{ transform: rotate(360deg); } }
   .btn-yes{
     background: linear-gradient(135deg, var(--gold), #9C7F44);
     color: #fff;
@@ -841,7 +821,7 @@
   const btnYes = document.getElementById('btnYes');
   const btnNo = document.getElementById('btnNo');
 
-  async function submitRSVP(attending, btn){
+  function submitRSVP(attending){
     const name = nameInput.value.trim();
     if(!name){
       msg.textContent = 'يرجى كتابة الاسم أولاً';
@@ -853,35 +833,25 @@
       attending,
       respondedAt: new Date().toISOString()
     };
-    // Show processing feedback: spinner on the pressed button + disable both.
-    btnYes.disabled = true;
-    btnNo.disabled = true;
-    btn.classList.add('loading');
+    // Instant feedback — show the confirmation immediately.
     msg.style.color = '#7C6A9C';
-    msg.textContent = 'جاري الإرسال...';
-    try{
-      await fetch(GAS_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids CORS preflight
-        body: JSON.stringify(entry)
-      });
-      msg.style.color = '#7C6A9C';
-      msg.textContent = attending
-        ? 'شكرًا لكم، بانتظار احتفالنا معكم!'
-        : 'شكرًا لإخباركم، سنفتقدكم في هذا اليوم 💜';
-      nameInput.value = '';
-    }catch(e){
+    msg.textContent = attending
+      ? 'شكرًا لكم، بانتظار احتفالنا معكم!'
+      : 'شكرًا لإخباركم، سنفتقدكم في هذا اليوم 💜';
+    nameInput.value = '';
+    // Send in the background; only surface an error if it fails.
+    fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids CORS preflight
+      body: JSON.stringify(entry)
+    }).catch(() => {
       msg.style.color = '#B9564B';
       msg.textContent = 'حدث خطأ، حاول مرة أخرى';
-    }finally{
-      btn.classList.remove('loading');
-      btnYes.disabled = false;
-      btnNo.disabled = false;
-    }
+    });
   }
 
-  btnYes.addEventListener('click', () => submitRSVP(true, btnYes));
-  btnNo.addEventListener('click', () => submitRSVP(false, btnNo));
+  btnYes.addEventListener('click', () => submitRSVP(true));
+  btnNo.addEventListener('click', () => submitRSVP(false));
 
   // ---------- Admin ----------
   const adminToggle = document.getElementById('adminToggle');
