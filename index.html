@@ -326,6 +326,30 @@
     color: var(--plum-text);
     font-weight:500;
   }
+  .map-link{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-top:14px;
+    padding:9px 18px;
+    border:1.5px solid var(--gold-soft);
+    border-radius:30px;
+    color: var(--gold);
+    text-decoration:none;
+    font-size:14px;
+    font-weight:700;
+    background: transparent;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  }
+  .map-link svg{ flex:none; }
+  .map-link:hover{
+    background: rgba(185,154,91,0.08);
+    border-color: var(--gold);
+    box-shadow: 0 4px 16px rgba(185,154,91,0.22);
+    transform: translateY(-1px);
+  }
+  .map-link:active{ transform: scale(0.98); }
+  .map-link:focus-visible{ outline: 2px solid var(--gold); outline-offset:3px; }
 
   /* ---------- COUNTDOWN ---------- */
   .countdown-wrap{
@@ -586,6 +610,13 @@
       <div class="label">المكان</div>
       <div class="value">Swiss Inn Pyramids Golf Resort</div>
       <div class="value" style="font-size:15px; opacity:0.75;">مدينة السادس من أكتوبر</div>
+      <a class="map-link" href="https://www.google.com/maps/place/Swiss+Inn+%E2%80%A2+Pyramids+Golf+Resort/@29.9632053,31.0443535,17z/data=!3m1!4b1!4m9!3m8!1s0x1458504dd8b9fb0d:0x70da4d0835b50bf7!5m2!4m1!1i2!8m2!3d29.9632053!4d31.0469284!16s%2Fg%2F11btwr5n45" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+        <span>عرض الموقع على خرائط جوجل</span>
+      </a>
     </div>
   </div>
 </section>
