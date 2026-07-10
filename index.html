@@ -278,8 +278,8 @@
     text-transform: uppercase;
   }
   .scroll-hint{
-    position:absolute;
-    bottom: 26px;
+    position:fixed;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
     left:50%;
     transform: translateX(-50%);
     z-index:2;
@@ -628,7 +628,8 @@
     </svg>
   </div>
   <div class="hero-inner" id="heroInner">
-    <p class="story">بِكُلِّ الحُبِّ وَالفَرَحِ، نَدْعُوكُمْ لِتَشْهَدُوا مَعَنَا بِدَايَةَ أَجْمَلِ حِكَايَةٍ</p>
+    <p class="story">بِكُلِّ الحُبِّ وَالفَرَحِ،</p>
+    <p class="story">نَدْعُوكُمْ لِتَشْهَدُوا مَعَنَا بِدَايَةَ أَجْمَلِ حِكَايَةٍ</p>
     <h1 class="names display">عُمَر<span class="amp">و</span>نَادِين</h1>
     <p class="hero-sub">Wedding Celebration</p>
   </div>
