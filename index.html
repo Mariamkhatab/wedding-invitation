@@ -271,7 +271,7 @@
     margin: 2px 0;
   }
   .hero-sub{
-    margin-top: 14px;
+    margin-top: 30px;
     font-size: 12px;
     letter-spacing: 3px;
     color: var(--gold);
@@ -293,14 +293,17 @@
     animation: scrollHintIn 1s ease 1.6s forwards;
   }
   .scroll-hint-text{
-    font-size: 11px;
+    font-size: 13px;
+    font-weight: 700;
     letter-spacing: 2px;
-    color: var(--lavender-deep);
+    color: var(--plum-text);
+    text-transform: uppercase;
+    text-shadow: 0 1px 6px rgba(251,246,236,0.9);
   }
   .scroll-hint svg{ animation: scrollHintBounce 1.8s ease-in-out infinite; }
   @keyframes scrollHintIn{
     from{ opacity:0; transform: translate(-50%, 8px); }
-    to{ opacity:0.9; transform: translate(-50%, 0); }
+    to{ opacity:1; transform: translate(-50%, 0); }
   }
   @keyframes scrollHintBounce{
     0%, 100%{ transform: translateY(0); }
@@ -308,7 +311,7 @@
   }
   .scroll-hint.hidden{ opacity:0 !important; transition: opacity 0.4s ease; }
   @media (prefers-reduced-motion: reduce){
-    .scroll-hint{ animation: none; opacity:0.9; }
+    .scroll-hint{ animation: none; opacity:1; }
     .scroll-hint svg{ animation: none; }
   }
 
@@ -461,6 +464,7 @@
     flex-wrap:wrap;
   }
   .btn{
+    position:relative;
     padding: 14px 30px;
     border-radius: 30px;
     border: none;
@@ -468,10 +472,29 @@
     font-size: 15px;
     font-weight:700;
     cursor:pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
   }
   .btn:focus-visible{ outline: 2px solid var(--gold); outline-offset:3px; }
   .btn:active{ transform: scale(0.97); }
+  .btn:disabled{ cursor: default; }
+  .btn:disabled:not(.loading){ opacity: 0.5; }
+  .btn.loading{ color: transparent; }
+  .btn.loading::after{
+    content:'';
+    position:absolute;
+    left:50%; top:50%;
+    width:18px; height:18px;
+    margin:-9px 0 0 -9px;
+    border-radius:50%;
+    border:2px solid rgba(255,255,255,0.4);
+    border-top-color:#fff;
+    animation: btnSpin 0.7s linear infinite;
+  }
+  .btn-no.loading::after{
+    border-color: var(--lavender-soft);
+    border-top-color: var(--lavender-deep);
+  }
+  @keyframes btnSpin{ to{ transform: rotate(360deg); } }
   .btn-yes{
     background: linear-gradient(135deg, var(--gold), #9C7F44);
     color: #fff;
@@ -685,11 +708,12 @@
     <button class="btn btn-yes" id="btnYes" data-animate>بكل سرور، سنحضر</button>
     <button class="btn btn-no" id="btnNo" data-animate>نعتذر عن الحضور</button>
   </div>
+  <p class="story" style="margin-top:28px;">وُجُودُكُمْ بَيْنَنَا هُوَ أَجْمَلُ مَا يُكْمِلُ فَرْحَتَنَا 🌙 </p>
   <div class="rsvp-msg" id="rsvpMsg"></div>
 </div>
 
 <footer>
-  وُجُودُكُمْ بَيْنَنَا هُوَ أَجْمَلُ مَا يُكْمِلُ فَرْحَتَنَا 🌙
+
 </footer>
 
 <audio id="bgMusic" src="music.mp3" loop preload="auto"></audio>
@@ -814,8 +838,10 @@
 
   const nameInput = document.getElementById('guestName');
   const msg = document.getElementById('rsvpMsg');
+  const btnYes = document.getElementById('btnYes');
+  const btnNo = document.getElementById('btnNo');
 
-  async function submitRSVP(attending){
+  async function submitRSVP(attending, btn){
     const name = nameInput.value.trim();
     if(!name){
       msg.textContent = 'يرجى كتابة الاسم أولاً';
@@ -827,6 +853,12 @@
       attending,
       respondedAt: new Date().toISOString()
     };
+    // Show processing feedback: spinner on the pressed button + disable both.
+    btnYes.disabled = true;
+    btnNo.disabled = true;
+    btn.classList.add('loading');
+    msg.style.color = '#7C6A9C';
+    msg.textContent = 'جاري الإرسال...';
     try{
       await fetch(GAS_URL, {
         method: 'POST',
@@ -841,11 +873,15 @@
     }catch(e){
       msg.style.color = '#B9564B';
       msg.textContent = 'حدث خطأ، حاول مرة أخرى';
+    }finally{
+      btn.classList.remove('loading');
+      btnYes.disabled = false;
+      btnNo.disabled = false;
     }
   }
 
-  document.getElementById('btnYes').addEventListener('click', () => submitRSVP(true));
-  document.getElementById('btnNo').addEventListener('click', () => submitRSVP(false));
+  btnYes.addEventListener('click', () => submitRSVP(true, btnYes));
+  btnNo.addEventListener('click', () => submitRSVP(false, btnNo));
 
   // ---------- Admin ----------
   const adminToggle = document.getElementById('adminToggle');
